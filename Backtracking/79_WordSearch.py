@@ -1,35 +1,26 @@
 class Solution:
     def exist(self, board: List[List[str]], word: str) -> bool:
-        a = set(word)
-        b = set()
-        start_index = []
-        ROWS = len(board)
-        COLS = len(board[0])
-        for i in range(ROWS):
-            for j in range(COLS):
-                if word[0] in board[i][j]:
-                    start_index.append([i,j])
-                b.add(board[i][j])
-        
-        if len(a-b)>0:
-            return False
-
-        def backtrack(r, c, string, used):
-            if r < 0 or c < 0 or r>= ROWS or c >= COLS or tuple((r,c)) in used:
-                return False
-            if len(string) > 0 and string[-1] != word[len(string)-1]:
-                return False
-            if string + board[r][c]== word:
+        ROWS, COLS = len(board), len(board[0])
+        visited = set()
+        def dfs(row, col, i):
+            if i == len(word):
                 return True
-            used.add(tuple((r,c)))
-            res = backtrack(r + 1, c, string + board[r][c], used)\
-            or backtrack(r - 1, c, string + board[r][c], used)\
-            or backtrack(r, c + 1, string + board[r][c], used)\
-            or backtrack(r, c - 1, string + board[r][c], used)
-            used.remove(tuple((r,c)))
-            return res
+            if (row not in range(ROWS)) or (col not in range(COLS)) or board[row][col] != word[i] or (row, col) in visited:
+                return False
+            visited.add((row, col))
+            found = dfs(row + 1, col, i + 1) or dfs(row - 1, col, i + 1) or \
+                    dfs( row, col+1, i + 1) or dfs(row, col-1, i+1)
+            visited.remove((row, col))
+            return found
 
-        for i,j in start_index:
-            if backtrack(i,j,"", set()):
-                return True
+        count = Counter(word)
+
+        if count[word[0]] > count[word[-1]]:
+            word = word[::-1]
+
+        for row in range(ROWS):
+            for col in range(COLS):
+                if dfs(row, col, 0):
+                    return True
+
         return False
