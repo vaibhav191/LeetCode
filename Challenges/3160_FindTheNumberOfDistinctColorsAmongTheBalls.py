@@ -1,18 +1,16 @@
 class Solution:
     def queryResults(self, limit: int, queries: List[List[int]]) -> List[int]:
-        color_cache = defaultdict(list)
+        color_cache = defaultdict(int)
         index_map = defaultdict(int)
         ans = []
         for i, color in queries:
             if i in index_map:
-                c_old = index_map[i]
-                # change color_cache
-                j = color_cache[c_old].index(i)
-                color_cache[c_old][j], color_cache[c_old][-1] = color_cache[c_old][-1], color_cache[c_old][j]
-                color_cache[c_old].pop()
-                if len(color_cache[c_old]) == 0:
-                    del color_cache[c_old]
+                prev_color = index_map[i]
+                if color_cache[prev_color] == 1:
+                    del color_cache[prev_color]
+                else:
+                    color_cache[prev_color] -= 1
             index_map[i] = color
-            color_cache[color].append(i)
+            color_cache[color] += 1
             ans.append(len(color_cache))
         return ans
