@@ -1,3 +1,4 @@
+# O(n)
 class Solution:
     def removeDuplicates(self, nums: List[int]) -> int:
         k = 0
